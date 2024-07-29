@@ -8,7 +8,7 @@ Este código cria uma interface gráfica do usuário (GUI) visando a necessidade
    - PIL
      Image, ImageTk, ImageEnhance
 
-   <strong></strong>
+<strong>O usuário/dev deverá instalar o Python e as bibliotecas necessárias em todos os computadores que for executar o programa. Optei por esse método exatamente para poder instalar manualmente toda vez que for necessário!</strong>
   
     
 <strong>Obs: .</strong>
