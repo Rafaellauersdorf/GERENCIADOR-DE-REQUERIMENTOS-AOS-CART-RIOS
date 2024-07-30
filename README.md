@@ -31,7 +31,7 @@ logo abaixo, 3 botões:
 - Incluido números antes da descrição nos botões para identificar a ordem de importância do processo.
 
 [![Status do Projeto](https://img.shields.io/badge/Status-Ready%20To%20Use!-brightgreen)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/tree/main)
-[![Número de Downloads](https://img.shields.io/github/downloads/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/total)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/releases)
+[![Número de Downloads](https://img.shields.io/github/downloads/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/total?cacheSeconds=0)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/releases)
 
 
   
