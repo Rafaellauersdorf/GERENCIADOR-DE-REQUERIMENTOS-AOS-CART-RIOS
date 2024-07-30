@@ -29,5 +29,10 @@ logo abaixo, 3 botões:
 <strong>ATUALIZAÇÃO:</strong>
 - Incluido o botão "4 - Telas Orientativas SAEC" que retorna o arquivo docx das telas orientativas para se iniciar o requerimento.
 - Incluido números antes da descrição nos botões para identificar a ordem de importância do processo.
+
+[![Status do Projeto](https://img.shields.io/badge/Status-Em%20desenvolvimento-brightgreen)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/tree/main)
+[![Número de Downloads](https://img.shields.io/github/downloads/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/total)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/releases)
+[![Cobertura de Código](https://img.shields.io/badge/Cobertura%20de%20Código-80%25-yellowgreen)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/tree/main)
+
   
 Desenvolvido por Rafael Souza. ©
