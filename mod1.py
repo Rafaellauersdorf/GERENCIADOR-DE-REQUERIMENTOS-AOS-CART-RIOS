@@ -67,7 +67,7 @@ def atualizar_planilha():
 
 app = customtkinter.CTk()
 app.geometry("650x350")
-app.title("Programa Modelo de Pedidos aos Cartórios")
+app.title("Modelo de Pedidos aos Cartórios - Patrimônio IAT")
 app.grid_rowconfigure(0, weight=1)
 app.grid_columnconfigure((0, 1), weight=1)
 
@@ -77,12 +77,20 @@ def resource_path(relative_path):
         # PyInstaller cria uma variável _MEIPASS para o diretório temporário
         base_path = sys._MEIPASS
     except Exception:
-        base_path = os.path.abspath(".")
+        # Se _MEIPASS não existir, use o caminho do diretório do script
+        base_path = os.path.abspath(os.path.dirname(__file__))  # <-- Corrigido aqui
     return os.path.join(base_path, relative_path)
 
+def abrir_telas_orientativas():
+    caminho_arquivo = "S:/GEAD-DAG-PATRIMONIO/TELAS ORIENTATIVAS SAEC IMÓVEIS CRISTIAN/ABERTURA-AVERBAÇÃO DE MATRÍCULA  SAEC.docx"
+    if os.path.exists(caminho_arquivo):
+        os.startfile(caminho_arquivo)
+    else:
+        customtkinter.CTkLabel(frame_mensagens, text="Arquivo não encontrado!", text_color="red").pack(pady=5)
+        
 # Carregar e ajustar a imagem de fundo
-imagem_fundo = Image.open(resource_path("Logo animado azul neon futurista para tecnologia.png"))
-largura_imagem = 270  # Largura desejada para a imagem na lateral
+imagem_fundo = Image.open(resource_path("LOGOELEMENTTO.png"))
+largura_imagem = 290  # Largura desejada para a imagem na lateral
 altura_imagem = imagem_fundo.height * largura_imagem // imagem_fundo.width  # Ajusta a altura proporcionalmente
 imagem_fundo = imagem_fundo.resize((largura_imagem, altura_imagem))  # Redimensiona a imagem
 
@@ -108,14 +116,17 @@ opcoes = customtkinter.CTkComboBox(app,
                                   width=285)
 opcoes.pack(pady=20)
 
-botao_abrir = customtkinter.CTkButton(app, text="Abrir", command=abrir_arquivo)
+botao_abrir = customtkinter.CTkButton(app, text="1º - Abrir", command=abrir_arquivo)
 botao_abrir.pack(pady=5)
 
-botao_criar_pasta = customtkinter.CTkButton(app, text="Criar Nova Pasta", command=criar_pasta)
-botao_criar_pasta.pack(pady=5)
-
-botao_atualizar_planilha = customtkinter.CTkButton(app, text="Atualizar Planilha", command=atualizar_planilha)
+botao_atualizar_planilha = customtkinter.CTkButton(app, text="2º - Atualizar Planilha", command=atualizar_planilha)
 botao_atualizar_planilha.pack(pady=5)
+
+botao_telas_orientativas = customtkinter.CTkButton(app, text="3º - Telas Orientativas SAEC", command=abrir_telas_orientativas)
+botao_telas_orientativas.pack(pady=5)
+
+botao_criar_pasta = customtkinter.CTkButton(app, text="4º - Criar Nova Pasta", command=criar_pasta)
+botao_criar_pasta.pack(pady=5)  
 
 label_desenvolvedor = customtkinter.CTkLabel(app, 
                                             text="Desenvolvido por Rafael Souza - (41)99821-5865",
@@ -133,3 +144,4 @@ app.minsize(650, 350)  # Define o tamanho mínimo
 app.maxsize(650, 350)  # Define o tamanho máximo (igual ao mínimo para bloquear o redimensionamento)
 
 app.mainloop()
+#Glorificado seja o nome de Jesus!
