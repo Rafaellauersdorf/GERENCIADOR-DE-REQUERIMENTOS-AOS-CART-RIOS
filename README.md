@@ -25,5 +25,9 @@ logo abaixo, 3 botões:
      - Ao Clicar em <strong>Sim</strong> o programa abre a nova pasta e apresenta uma mensagem do local exato que foi criada. Se o usuário selecionar <strong>Não</strong>, as opções se encerram.
      
    - Atualizar Planilha: Abre a planilha no qual é feito o controle do pedido, contendo informações gerais e histórico completo.
-
+     
+<strong>ATUALIZAÇÃO:</strong>
+- Incluido o botão "4 - Telas Orientativas SAEC" que retorna o arquivo docx das telas orientativas para se iniciar o requerimento.
+- Incluido números antes da descrição nos botões para identificar a ordem de importância do processo.
+  
 Desenvolvido por Rafael Souza. ©
