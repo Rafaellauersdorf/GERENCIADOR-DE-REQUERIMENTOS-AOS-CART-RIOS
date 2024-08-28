@@ -15,6 +15,8 @@ def abrir_arquivo():
         pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO ITCG ATE IAT - MUDA CNPJ"
     elif opcao_selecionada == "3 - Arrazoado Leis ITC/IAT e REQ. Modelo":
         pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO ITC ATE IAT - MUDA CNPJ"
+    elif opcao_selecionada == "4 - Arrazoado Leis SUREHMA/IAT e REQ. Modelo":
+        pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO SUREHMA ATE IAT - MUDA CNPJ"
     if pasta_destino:
         os.startfile(pasta_destino)
 
@@ -29,6 +31,8 @@ def criar_pasta():
             pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO ITCG ATE IAT - MUDA CNPJ"
         elif opcao_selecionada == "3 - Arrazoado Leis ITC/IAT e REQ. Modelo":
             pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO ITC ATE IAT - MUDA CNPJ"
+        elif opcao_selecionada == "4 - Arrazoado Leis SUREHMA/IAT e REQ. Modelo":
+            pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO SUREHMA ATE IAT - MUDA CNPJ"
         else:
             customtkinter.CTkLabel(frame_mensagens, text="Selecione uma opção válida!", text_color="red").pack(pady=5)
             return 
@@ -111,7 +115,8 @@ opcoes = customtkinter.CTkComboBox(app,
                                   values=[
                                       "1 - Arrazoado Leis IAP/IAT e REQ. Modelo",
                                       "2 - Arrazoado Leis ITCG/IAT e REQ. Modelo",
-                                      "3 - Arrazoado Leis ITC/IAT e REQ. Modelo"
+                                      "3 - Arrazoado Leis ITC/IAT e REQ. Modelo",
+                                      "4 - Arrazoado Leis SUREHMA/IAT e REQ. Modelo"
                                   ],
                                   width=285)
 opcoes.pack(pady=20)
