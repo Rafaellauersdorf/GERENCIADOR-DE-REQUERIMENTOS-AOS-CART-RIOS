@@ -21,11 +21,12 @@ Este código cria uma interface gráfica do usuário (GUI) visando a necessidade
   
     
 Resumo:
-O Programa apresenta na janela principal uma caixa de seleção no qual o usuário pode escolher 4 opções de averbação:
+O Programa apresenta na janela principal uma caixa de seleção no qual o usuário pode escolher 5 opções de averbação:
    - Arrazoado Leis AUTARQUIA-5/AUTARQUIA-1 e REQ. Modelo (Conjunto de leis atualizadas e necessárias mais o requerimento modelo para editar e iniciar o pedido de averbação/registro de imóveis)
    - Arrazoado Leis AUTARQUIA-4/AUTARQUIA-1 e REQ. Modelo
    - Arrazoado Leis AUTARQUIA-3/AUTARQUIA-1 e REQ. Modelo
    - Arrazoado Leis AUTARQUIA-2/AUTARQUIA-1 e REQ. Modelo
+   - Arrazoado Leis AUTARQUIA-1/AUTARQUIA-1 e REQ. Modelo
 logo abaixo, 4 botões:
    - Abrir: Abre a pasta onde contém o arquivo pdf das leis e requerimento modelo conforme opção selecionada na caixa acima;
    - Atualizar Planilha: Abre a planilha no qual é feito o controle do pedido, contendo informações gerais e histórico completo.
