@@ -1,5 +1,4 @@
 import customtkinter
-from tkinter import simpledialog
 from customtkinter import CTkImage, CTkInputDialog, CTkLabel, CTkButton, CTkToplevel
 import os
 from PIL import Image, ImageEnhance
