@@ -4,13 +4,20 @@ Este código cria uma interface gráfica do usuário (GUI) visando a necessidade
 
 ## Bibliotecas/dependências utilizadas:
    - customtkinter
-        > CTKImage
+        > CTKImage, CTkInputDialog, CTkLabel, CTkButton, CTkToplevel        
    - Os
    - PIL
         > Image, ImageEnhance
    - sys
+   - socket
+   - hashlib
+   - uuid
+   - json
+   - datetime
+        > timedelta
+   - subprocess
 
-<strong>O usuário/dev deverá instalar o Python e as bibliotecas necessárias em todos os computadores que for executar o programa. Optei por não incluir funções de localização de pastas no programa, exatamente para poder instalar manualmente toda vez que for necessário!</strong>
+<strong>O usuário não precisará instalar o Python e as bibliotecas necessárias nos computadores que for executar o programa. Somente copiar o executável e utilizar, a menos que seja um Desenvolvedor.</strong>
   
     
 Resumo:
@@ -32,7 +39,8 @@ logo abaixo, 4 botões:
 <strong>ATUALIZAÇÃO:</strong>
 - Incluido o botão "4 - Telas Orientativas SAEC" que retorna o arquivo docx das telas orientativas para se iniciar o requerimento.
 - Incluido números antes da descrição nos botões para identificar a ordem de importância do processo.
-- Incluido outro orgão para iniciar os pedidos.
+- Incluido outros orgãos para iniciar os pedidos.
+- incluido verificação de segurança por IP/palavra passe/endereço MAC
 
 [![Status do Projeto](https://img.shields.io/badge/Status-Ready%20To%20Use!-brightgreen)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/tree/main)
 [![Número de Downloads](https://img.shields.io/github/downloads/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/total?cacheSeconds=0)](https://github.com/Rafaellauersdorf/GERENCIADOR-DE-REQUERIMENTOS-AOS-CART-RIOS/releases)
