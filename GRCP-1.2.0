@@ -1,0 +1,357 @@
+import customtkinter
+from tkinter import simpledialog
+from customtkinter import CTkImage, CTkInputDialog, CTkLabel, CTkButton, CTkToplevel
+import os
+from PIL import Image, ImageEnhance
+import sys
+import socket
+import hashlib
+import uuid
+import json
+from datetime import datetime, timedelta
+import subprocess
+
+# Configuração básica do aplicativo
+app = customtkinter.CTk()
+app.geometry("650x350")
+app.title("Gestão de Requerimentos aos Cartórios para Patrimônio Imóvel - Patrimônio (IAT)")
+
+# Configurações de segurança
+allowed_ip = "10.71.6.183"  # IP permitido
+secret = "Programa-mrcp-1.2.0-2024-trabalho"  # Substitua pelo segredo usado para gerar a chave de licença
+license_file = "license.key"  # Nome do arquivo onde a chave de licença será armazenada
+imagem_fundo_ctk = None  # Variável global para armazenar a imagem
+
+# Função para verificar se o IP da máquina é permitido
+def is_allowed_ip(allowed_ip):
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+    return local_ip == allowed_ip
+
+# Função para mostrar a mensagem de erro "Acesso negado!" em uma janela gráfica
+def show_access_denied_message():
+    error_dialog = CTkToplevel(app)
+    error_dialog.geometry("350x150")
+    error_dialog.title("Erro:")
+    label_error = CTkLabel(error_dialog, text="Acesso negado!\nEste programa não pode ser executado nesta máquina.", text_color="red")
+    label_error.pack(pady=20)
+    button_ok = CTkButton(error_dialog, text="OK", command=error_dialog.destroy)
+    button_ok.pack(pady=10)
+    app.wait_window(error_dialog)
+    sys.exit()  # Fecha o programa após a mensagem de erro
+    
+# Verifica se o IP é permitido, caso contrário exibe a mensagem de "Acesso negado!"
+if not is_allowed_ip(allowed_ip):
+    show_access_denied_message()
+
+# Função para obter o caminho seguro para o arquivo de licença
+def get_license_path():
+    """Retorna o caminho do arquivo de licença em um diretório seguro."""
+    if os.name == 'nt':  # Windows
+        appdata_path = os.getenv('APPDATA')  # Diretório AppData
+        license_dir = os.path.join(appdata_path, "SeuPrograma")  # Pasta do programa em AppData
+    else:
+        home_path = os.path.expanduser("~")  # Diretório home no Linux/macOS
+        license_dir = os.path.join(home_path, ".SeuPrograma")  # Pasta oculta do programa
+
+    if not os.path.exists(license_dir):
+        os.makedirs(license_dir)  # Cria a pasta se não existir
+
+    return os.path.join(license_dir, "license.key")
+
+# Função para salvar a chave de licença
+def save_license_key(key):
+    """Salva a chave de licença e a data de ativação no arquivo."""
+    data = {
+        "license_key": key,
+        "activation_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Data e hora atual
+    }
+    license_file = get_license_path()  # Obtém o caminho seguro
+    with open(license_file, 'w') as f:
+        json.dump(data, f)  # Salva o arquivo no diretório seguro
+
+# Função para carregar a licença existente do arquivo
+def load_license_data():
+    """Carrega a licença e a data de ativação do arquivo de licença."""
+    license_file = get_license_path()
+    if os.path.exists(license_file):
+        with open(license_file, 'r') as f:
+            return json.load(f)
+    return None
+
+# Função para verificar se a licença já foi ativada e se ainda está dentro do período de validade
+def is_license_valid():
+    """Verifica se a licença já foi ativada e se ainda está dentro do período de validade."""
+    data = load_license_data()
+    if data:
+        activation_date_str = data['activation_date']
+
+        # Tentamos primeiro o formato de data com hora
+        try:
+            activation_date = datetime.strptime(activation_date_str, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            # Caso falhe, usamos o formato de data sem hora
+            activation_date = datetime.strptime(activation_date_str, '%Y-%m-%d')
+
+        # Validade de 1 minuto para teste (modifique para 365 dias em produção)
+        if datetime.now() < activation_date + timedelta(days=501):  # Alterar para 365 dias em produção
+            return data['license_key']  # A licença ainda é válida
+    return None
+
+# Função para gerar a chave de licença baseada no endereço MAC da máquina e um segredo
+def generate_license_key(secret):
+    mac_address = hex(uuid.getnode())[2:]  # Obtém o endereço MAC da máquina
+    raw_key = f"{mac_address}-{secret}"    # Combina o endereço MAC com o segredo
+    return hashlib.sha256(raw_key.encode()).hexdigest()  # Gera a chave de licença
+
+# Função para validar a chave de licença fornecida
+def validate_license_key(provided_key, secret):
+    expected_key = generate_license_key(secret)
+    return expected_key == provided_key.strip()  # Remove espaços ao redor da chave fornecida
+
+# Função para mostrar a mensagem de erro de chave inválida
+def show_invalid_key_message():
+    error_dialog = CTkToplevel(app)
+    error_dialog.geometry("300x150")
+    error_dialog.title("Erro:")
+    error_dialog.resizable(False, False)
+    error_dialog.protocol("WM_DELETE_WINDOW", lambda: close_program(error_dialog))
+    
+    label_error = CTkLabel(error_dialog, text="Chave de licença inválida!\nContate o Administrador.", text_color="red")
+    label_error.pack(pady=20)
+    
+    button_ok = CTkButton(error_dialog, text="OK", command=lambda: close_program(error_dialog))
+    button_ok.pack(pady=10)
+    
+    app.wait_window(error_dialog)
+    
+# Função para fechar o programa corretamente
+def close_program(window):
+    """Fecha o programa de forma apropriada."""
+    window.destroy()  # Fecha a janela
+    app.quit()  # Encerra a interface gráfica
+    sys.exit()  # Encerra o programa
+
+# Função para interceptar o fechamento da janela principal (clicando no X)
+def on_closing():
+    """Intercepta o fechamento da janela principal."""
+    show_invalid_key_message()  # Mostra uma mensagem de erro ao tentar fechar
+    sys.exit()  # Garante que o programa será encerrado
+
+# Função para mostrar mensagem de licença expirada
+def show_expired_license_message():
+    """Exibe uma mensagem na interface gráfica informando que a licença expirou."""
+    expired_dialog = CTkToplevel(app)
+    expired_dialog.geometry("350x200")
+    expired_dialog.title("Licença Expirada")
+    expired_dialog.resizable(False, False) # Impedir o redimensionamento da janela de expiração
+    expired_dialog.protocol("WM_DELETE_WINDOW", lambda: close_program(expired_dialog))  # Fecha o programa ao clicar no "X"
+    
+    label_expired = CTkLabel(expired_dialog, text="Sua licença expirou!\nContate o Desenvolvedor pelo (41) 99821-5865", text_color="red")
+    label_expired.pack(pady=40)
+    
+    # Criar um frame para alinhar os botões
+    button_frame = customtkinter.CTkFrame(expired_dialog)
+    button_frame.pack(pady=10)
+    
+    # Botão de OK para fechar o programa
+    button_ok = CTkButton(button_frame, text="OK", width=150, command=lambda: close_program(expired_dialog))
+    button_ok.pack(side="left", padx=10)
+
+    # Botão de Renovar Licença para inserir uma nova licença
+    button_renew = CTkButton(button_frame, text="Renovar Licença", width=150, command=lambda: renew_license(expired_dialog))
+    button_renew.pack(side="left", padx=10)
+    
+    app.wait_window(expired_dialog)
+    
+    
+# Função para renovar a licença
+def renew_license(expired_dialog):
+    """Permite ao usuário inserir uma nova licença. Se for igual à anterior, exibe uma mensagem de erro."""
+    expired_dialog.destroy()  # Fecha o diálogo de expiração
+
+    license_dialog = CTkInputDialog(text="Insira uma nova chave de licença:", title="Renovação de Licença")
+    new_key = license_dialog.get_input()
+
+    # Verificar se o usuário clicou em "Cancelar"
+    if new_key is None:
+        sys.exit()  # Fecha o programa
+
+    old_key = load_license_data()  # Obter os dados da licença antiga
+    if old_key and new_key == old_key['license_key']:
+               
+        # Se a nova chave for igual à antiga, exibe uma mensagem de erro
+        error_dialog = CTkToplevel(app)
+        error_dialog.geometry("300x150")
+        error_dialog.title("Erro de Licença")
+        error_dialog.resizable(False, False)
+        error_dialog.protocol("WM_DELETE_WINDOW", lambda: close_program(error_dialog))
+        
+        label_error = CTkLabel(error_dialog, text="Licença já utilizada e expirada.\nContate o Desenvolvedor pelo (41) 99821-5865.", text_color="red")
+        label_error.pack(pady=20)
+        
+        button_ok = CTkButton(error_dialog, text="OK", command=lambda: close_program(error_dialog))
+        button_ok.pack(pady=10)
+        
+        app.wait_window(error_dialog)
+    else:
+        # Salvar a nova chave se for válida e diferente da anterior
+        if validate_license_key(new_key, secret):
+            save_license_key(new_key)  # Salva a nova licença
+        else:
+            show_invalid_key_message()
+
+# Verificar se o arquivo de licença existe
+if not os.path.exists(get_license_path()):
+    # Se o arquivo não existir, pedir uma nova chave
+    license_dialog = CTkInputDialog(text="Digite a chave de licença:", title="Autenticação de Licença")
+    provided_key = license_dialog.get_input()
+
+    # Verificar se o usuário clicou em "Cancelar"
+    if provided_key is None:
+        sys.exit()  # Fecha o programa
+
+    # Verificar se a chave de licença fornecida é válida
+    if not validate_license_key(provided_key, secret):
+        show_invalid_key_message()
+        sys.exit()
+    else:
+        save_license_key(provided_key)
+
+else:
+    # Verificar se a licença já foi ativada e é válida
+    valid_key = is_license_valid()
+
+    if valid_key:
+        if not validate_license_key(valid_key, secret):
+            show_expired_license_message()
+    else:
+        # Se a licença expirou ou não é válida
+        show_expired_license_message()
+
+# Funções para abrir arquivos e criar pastas
+def abrir_arquivo():
+    opcao_selecionada = opcoes.get()
+    pasta_destino = ""
+    if opcao_selecionada == "1 - Arrazoado Leis IAP/IAT e REQ. Modelo":
+        pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO IAP ATE IAT - NÃO MUDA CNPJ"
+    elif opcao_selecionada == "2 - Arrazoado Leis ITCG/IAT e REQ. Modelo":
+        pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO ITCG ATE IAT - MUDA CNPJ"
+    elif opcao_selecionada == "3 - Arrazoado Leis ITC/IAT e REQ. Modelo":
+        pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO ITC ATE IAT - MUDA CNPJ"
+    elif opcao_selecionada == "4 - Arrazoado Leis SUREHMA/IAT e REQ. Modelo":
+        pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO SUREHMA ATE IAT - MUDA CNPJ"
+    elif opcao_selecionada == "5 - Arrazoado Leis ÁGUAS/IAT e REQ. Modelo":
+        pasta_destino = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/LEIS E DECRETOS ATUAIS PARA REQUERIMENTO DE REGISTROS/ARRAZOADO DE LEIS CRIAÇÃO AGUAS ATE IAT - MUDA CNPJ"
+    if pasta_destino:
+        os.startfile(pasta_destino)
+
+# Função para criar a pasta com base na opção selecionada
+def criar_pasta():
+    def confirmar_criacao():
+        pasta_base = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL"
+        nome_subpasta = "PEDIDOS DE REGISTRO XXXXXXX - PROTOCOLAR SAEC - EPROC"
+        caminho_subpasta = os.path.join(pasta_base, nome_subpasta)    
+            
+        if not os.path.exists(caminho_subpasta):
+                os.makedirs(caminho_subpasta, exist_ok=True)
+            
+        frame_confirmacao.pack_forget()
+        
+        # Mensagem informativa
+        customtkinter.CTkLabel(frame_mensagens, text=f"A pasta '{nome_subpasta}' foi criada em:\n{pasta_base}", text_color="green").pack(pady=5)
+                
+        # Abre o diretório com a subpasta recém-criada já selecionada
+        if os.name == 'nt':  # Verifica se está no Windows
+            caminho_subpasta_absoluto = os.path.abspath(caminho_subpasta)
+            subprocess.Popen(f'explorer /select,"{caminho_subpasta_absoluto}"')
+        
+    # Limpar mensagens anteriores
+    for widget in frame_mensagens.winfo_children():
+        widget.destroy()
+
+    # Janela de confirmação
+    frame_confirmacao = customtkinter.CTkFrame(frame_mensagens)
+    label_confirmacao = customtkinter.CTkLabel(frame_confirmacao, text="Tem certeza que deseja criar a pasta agora?")
+    botao_sim = customtkinter.CTkButton(frame_confirmacao, text="Sim", command=confirmar_criacao)
+    botao_nao = customtkinter.CTkButton(frame_confirmacao, text="Não", command=lambda: frame_confirmacao.pack_forget())
+
+    label_confirmacao.pack(pady=5)
+    botao_sim.pack(side="left", padx=5)
+    botao_nao.pack(side="left", padx=5)
+    frame_confirmacao.pack(pady=5)
+
+def atualizar_planilha():
+    caminho_planilha = "S:/GEAD-DAG-PATRIMONIO/REGISTRO DE IMOVEIS IAT - GERAL/CONTROLE REQUERIMENTOS AOS CARTÓRIOS - GERAL.xlsx"
+    os.startfile(caminho_planilha)
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS  # Diretório temporário criado pelo PyInstaller
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+def abrir_telas_orientativas():
+    caminho_arquivo = "S:/GEAD-DAG-PATRIMONIO/TELAS ORIENTATIVAS SAEC IMÓVEIS CRISTIAN/ABERTURA-AVERBAÇÃO DE MATRÍCULA SAEC.docx"
+    if os.path.exists(caminho_arquivo):
+        os.startfile(caminho_arquivo)
+    else:
+        customtkinter.CTkLabel(frame_mensagens, text="Arquivo não encontrado!", text_color="red").pack(pady=5)
+
+# Carregar e ajustar a imagem de fundo
+imagem_fundo = Image.open(resource_path("LOGOPAT.png"))
+largura_imagem = 220
+altura_imagem = imagem_fundo.height * largura_imagem // imagem_fundo.width
+imagem_fundo = imagem_fundo.resize((largura_imagem, altura_imagem))
+enhancer_cor = ImageEnhance.Color(imagem_fundo)
+imagem_fundo = enhancer_cor.enhance(1.0)
+enhancer_contraste = ImageEnhance.Contrast(imagem_fundo)
+
+imagem_fundo_ctk = CTkImage(light_image=imagem_fundo, size=(largura_imagem, altura_imagem))
+label_fundo = customtkinter.CTkLabel(app, image=imagem_fundo_ctk, text="")
+label_fundo.place(x=0, y=(app.winfo_height() // 2) - (altura_imagem // 2))
+
+opcoes = customtkinter.CTkComboBox(app, 
+                                  values=[
+                                      "1 - Arrazoado Leis IAP/IAT e REQ. Modelo",
+                                      "2 - Arrazoado Leis ITCG/IAT e REQ. Modelo",
+                                      "3 - Arrazoado Leis ITC/IAT e REQ. Modelo",
+                                      "4 - Arrazoado Leis SUREHMA/IAT e REQ. Modelo",
+                                      "5 - Arrazoado Leis ÁGUAS/IAT e REQ. Modelo"
+                                  ],
+                                  state="readonly",
+                                  width=320,
+                                  justify="center")
+opcoes.set("Selecione uma opção")
+opcoes.pack(pady=20)
+
+botao_abrir = customtkinter.CTkButton(app, text="1º - Abrir", command=abrir_arquivo, width=180)
+botao_abrir.pack(pady=5)
+
+botao_atualizar_planilha = customtkinter.CTkButton(app, text="2º - Atualizar Planilha", command=atualizar_planilha, width=180)
+botao_atualizar_planilha.pack(pady=5)
+
+botao_telas_orientativas = customtkinter.CTkButton(app, text="3º - Telas Orientativas SAEC", command=abrir_telas_orientativas, width=180)
+botao_telas_orientativas.pack(pady=5)
+
+botao_criar_pasta = customtkinter.CTkButton(app, text="4º - Criar Nova Pasta", command=criar_pasta, width=180)
+botao_criar_pasta.pack(pady=5)  
+
+label_desenvolvedor = customtkinter.CTkLabel(app, 
+                                            text="Desenvolvido por Rafael Souza - (41)99821-5865",
+                                            text_color="#3b8ed0") 
+label_desenvolvedor.place(relx=0.02, rely=0.95, anchor="sw")
+
+frame_mensagens = customtkinter.CTkFrame(app, height=67, width=300)
+frame_mensagens.pack()
+
+app.update()
+app.geometry(f"{app.winfo_width()}x{app.winfo_height()}")
+
+app.minsize(650, 350)
+app.maxsize(650, 350)
+
+app.mainloop()
+
+#GLORIFICADO SEJA O NOME DE JESUS!
