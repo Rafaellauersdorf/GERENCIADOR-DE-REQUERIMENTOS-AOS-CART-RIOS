@@ -17,8 +17,8 @@ app.geometry("650x350")
 app.title("Gestão de Requerimentos aos Cartórios para Patrimônio Imóvel - Patrimônio (IAT)")
 
 # Configurações de segurança
-allowed_ip = "10.71.6.183"  # IP permitido
-secret = "Programa-mrcp-1.2.0-2024-trabalho"  # Substitua pelo segredo usado para gerar a chave de licença
+allowed_ip = "XXXXXXXX"  # IP permitido
+secret = "XXXXXXXXXXXXXXXXXXXX"  # Substitua pelo segredo usado para gerar a chave de licença
 license_file = "license.key"  # Nome do arquivo onde a chave de licença será armazenada
 imagem_fundo_ctk = None  # Variável global para armazenar a imagem
 
@@ -93,8 +93,8 @@ def is_license_valid():
             # Caso falhe, usamos o formato de data sem hora
             activation_date = datetime.strptime(activation_date_str, '%Y-%m-%d')
 
-        # Validade de 1 minuto para teste (modifique para 365 dias em produção)
-        if datetime.now() < activation_date + timedelta(days=501):  # Alterar para 365 dias em produção
+        # Validade de dias 
+        if datetime.now() < activation_date + timedelta(days=501):  
             return data['license_key']  # A licença ainda é válida
     return None
 
